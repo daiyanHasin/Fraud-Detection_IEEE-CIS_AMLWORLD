@@ -1,7 +1,7 @@
 # Past-Only Evidence Layer and Neural Hybrid for Fraud and Money-Laundering Detection
 
 **Author:** Hasin Md. Daiyan · **Date:** 14 October 2026
-**Live results page:** `<your-vercel-link>`
+**Live results page:** `(https://frauddetection-one.vercel.app/)`
 
 > The evidence layer, not the model architecture, carries the result. Given the same past-only evidence, a fully neural hybrid is slightly below LightGBM on IEEE-CIS card fraud (0.630 vs 0.635 PR-AUC) and ahead of it on IBM AMLworld money laundering (0.650 vs 0.625), with the smallest seed-to-seed spread of any model on both.
 
