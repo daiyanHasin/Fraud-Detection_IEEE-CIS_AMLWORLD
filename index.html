@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evidence-Layer Hybrid for Fraud and Money-Laundering Detection</title>
+<meta name="description" content="A past-only evidence layer and a two-model neural hybrid, evaluated on IEEE-CIS card fraud and IBM AMLworld.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f8fa;--panel:#fff;--ink:#14202e;--mute:#5b6878;--line:#d9dfe7;--a:#1d5fa8;--b:#b5532a;--hi:#1d5fa8;--lo:#9aa7b7;--ok:#16794f;--bad:#b3362e}
+@media(prefers-color-scheme:dark){:root:not([data-t=light]){--bg:#0f1620;--panel:#162130;--ink:#e6ecf3;--mute:#9aa8b9;--line:#2a384a;--a:#6fb0f0;--b:#f0955f;--hi:#6fb0f0;--lo:#52627a;--ok:#4fc48f;--bad:#f08078}}
+:root[data-t=dark]{--bg:#0f1620;--panel:#162130;--ink:#e6ecf3;--mute:#9aa8b9;--line:#2a384a;--a:#6fb0f0;--b:#f0955f;--hi:#6fb0f0;--lo:#52627a;--ok:#4fc48f;--bad:#f08078}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 "Source Serif 4",Georgia,serif}
+h1,h2,h3,nav,button,table,.sans{font-family:"IBM Plex Sans",system-ui,sans-serif}
+.w{max-width:980px;margin:0 auto;padding:0 22px}
+nav{position:sticky;top:0;z-index:9;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);font-size:14px}
+nav .w{display:flex;gap:18px;align-items:center;overflow-x:auto;white-space:nowrap;padding-top:11px;padding-bottom:11px}
+nav a{color:var(--mute);text-decoration:none}nav a:hover{color:var(--ink)}
+nav button{margin-left:auto;background:none;border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:3px 10px;cursor:pointer}
+header{padding:70px 0 40px;border-bottom:1px solid var(--line)}
+h1{font-size:clamp(28px,5vw,44px);line-height:1.15;margin:0 0 16px;letter-spacing:-.02em;max-width:800px}
+.by{color:var(--mute);font-size:15px;margin:0 0 26px}
+.lead{font-size:19px;max-width:760px;margin:0 0 30px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border:1px solid var(--line);background:var(--panel)}
+.stats div{padding:16px 18px;border-right:1px solid var(--line)}.stats div:last-child{border:0}
+.stats b{display:block;font:600 30px "IBM Plex Sans",sans-serif;color:var(--a)}.stats div:nth-child(even) b{color:var(--b)}
+.stats span{font-size:14px;color:var(--mute);line-height:1.4;display:block}
+section{padding:46px 0;border-bottom:1px solid var(--line)}
+h2{font-size:26px;margin:0 0 6px;letter-spacing:-.01em}h3{font-size:18px;margin:28px 0 8px}
+.sub{color:var(--mute);margin:0 0 22px;max-width:720px}
+p{max-width:760px}
+.plain{border-left:3px solid var(--a);padding:2px 0 2px 16px;margin:18px 0;color:var(--mute);max-width:760px}
+.plain b{color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);padding:18px 20px;border-radius:6px}
+.card h3{margin-top:0}.card p{margin:0;font-size:15.5px}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px;margin:18px 0}
+.fig .cap{font:14px/1.5 "IBM Plex Sans",sans-serif;color:var(--mute);margin-top:14px}.fig .cap b{color:var(--ink)}
+.tabs{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;margin:0 0 14px}
+.tabs button{background:var(--panel);color:var(--ink);border:0;padding:8px 16px;font-size:14px;cursor:pointer}
+.tabs button[aria-pressed=true]{background:var(--a);color:#fff}
+:root[data-t=dark] .tabs button[aria-pressed=true]{color:#0f1620}
+@media(prefers-color-scheme:dark){:root:not([data-t=light]) .tabs button[aria-pressed=true]{color:#0f1620}}
+.bar{display:grid;grid-template-columns:minmax(120px,230px) 1fr 86px;gap:10px;align-items:center;margin:7px 0;font:14px "IBM Plex Sans",sans-serif}
+.bar .t{height:20px;background:color-mix(in srgb,var(--line) 55%,transparent);position:relative;border-radius:3px}
+.bar i{display:block;height:100%;width:0;background:var(--lo);border-radius:3px;transition:width .9s cubic-bezier(.2,.7,.2,1)}
+.bar i.hi{background:var(--hi)}.bar i.mid{background:color-mix(in srgb,var(--hi) 55%,var(--lo))}
+.bar em{position:absolute;top:9px;height:2px;background:var(--ink);opacity:.75}
+.bar em:before,.bar em:after{content:"";position:absolute;top:-4px;width:2px;height:10px;background:var(--ink)}.bar em:before{left:0}.bar em:after{right:0}
+.bar span{text-align:right;font-variant-numeric:tabular-nums}
+table{border-collapse:collapse;width:100%;font-size:14px;background:var(--panel)}
+th,td{padding:8px 11px;text-align:right;border-bottom:1px solid var(--line)}th:first-child,td:first-child{text-align:left}
+th{font-weight:600;border-bottom:2px solid var(--ink)}tr.me td{font-weight:600;background:color-mix(in srgb,var(--a) 10%,transparent)}
+.tw{overflow-x:auto}
+.hm td{text-align:center;font-variant-numeric:tabular-nums;border:2px solid var(--panel)}
+.hm td:first-child{text-align:left;border:0;border-bottom:1px solid var(--line)}
+.pos{color:var(--ok)}.neg{color:var(--bad)}
+svg text{font:12px "IBM Plex Sans",sans-serif;fill:var(--mute)}
+svg .ax{stroke:var(--line)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;font:14px/1.45 "IBM Plex Sans",sans-serif}
+.flow div{background:var(--panel);border:1px solid var(--line);padding:12px 14px;border-radius:6px;position:relative}
+.flow b{display:block;margin-bottom:3px;color:var(--a)}
+a.btn{display:inline-block;font:500 14px "IBM Plex Sans",sans-serif;padding:8px 14px;border:1px solid var(--a);color:var(--a);border-radius:6px;text-decoration:none;margin:0 8px 8px 0}
+a.btn:hover{background:var(--a);color:var(--bg)}
+footer{padding:36px 0 60px;color:var(--mute);font:14px "IBM Plex Sans",sans-serif}
+:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){.bar i{transition:none}html{scroll-behavior:auto}}
+@media(max-width:560px){.bar{grid-template-columns:1fr 70px}.bar .t{grid-column:1/3;order:3}.stats div{border-right:0;border-bottom:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<nav><div class="w"><a href="#summary">Summary</a><a href="#method">Method</a><a href="#results">Results</a><a href="#users">By user history</a><a href="#evidence">Why it works</a><a href="#delay">Label delay</a><a href="#design">Design choices</a><a href="#code">Code</a><button id="th" aria-label="Toggle theme">Theme</button></div></nav>
+
+<header><div class="w">
+<h1>Fraud and money-laundering detection from past-only evidence</h1>
+<p class="by">Hasin Md. Daiyan · 14 October 2026 · Evaluated on IEEE-CIS (card fraud) and IBM AMLworld HI-Small (money laundering)</p>
+<p class="lead">The evidence a model reads matters more than the model itself. With the same past-only evidence, a fully neural hybrid is slightly behind LightGBM on card fraud and clearly ahead of it on money laundering, and it is the most stable model on both.</p>
+<div class="stats">
+<div><b>0.630</b><span>PR-AUC, hybrid on IEEE-CIS (LightGBM+ 0.635, raw LightGBM 0.546)</span></div>
+<div><b>0.650</b><span>PR-AUC, hybrid on AMLworld (LightGBM+ 0.625, raw LightGBM 0.157)</span></div>
+<div><b>87</b><span>evidence features, each built only from earlier transactions</span></div>
+<div><b>±0.001</b><span>hybrid seed-to-seed spread on IEEE-CIS (LightGBM+ ±0.009)</span></div>
+</div>
+</div></header>
+
+<main class="w">
+<section id="summary">
+<h2>What was achieved, in plain language</h2>
+<p class="sub">Five findings, each backed by the figures further down.</p>
+<div class="grid">
+<div class="card"><h3>The evidence layer is the big win</h3><p>Giving LightGBM a summary of each customer's and card's past lifts PR-AUC by +0.09 on card fraud and +0.47 on money laundering. Retraining LightGBM every 30 days (or daily) does not come close.</p></div>
+<div class="card"><h3>Past fraud labels carry card fraud</h3><p>On IEEE-CIS the lift comes from fraud labels that have become visible after a 30-day chargeback delay. Without labels, the layer adds nothing (−0.003).</p></div>
+<div class="card"><h3>Structure carries money laundering</h3><p>On AMLworld the layer works even with no labels (0.157 to 0.562), because laundering follows patterns such as fan-in and repeated account pairs.</p></div>
+<div class="card"><h3>Neural wins where history is rich</h3><p>For customers with 6+ earlier transactions the hybrid beats LightGBM+ on card fraud (0.775 vs 0.752). On AMLworld, where nearly every account has history, it wins overall (+0.025, every seed).</p></div>
+<div class="card"><h3>Simple combination wins</h3><p>A fixed weighted average of the two models beats a per-transaction gate on card fraud and ties on AMLworld. TabM beats TabNet by about +0.09 PR-AUC on both.</p></div>
+<div class="card"><h3>Leak-checked</h3><p>Label-flip and shuffle tests pass. A null test with shuffled labels gives ROC-AUC 0.501 (IEEE-CIS) and 0.488 (AMLworld), which is chance.</p></div>
+</div>
+</section>
+
+<section id="method">
+<h2>Method</h2>
+<p class="sub">Three parts. Every feature uses only earlier transactions, and a fraud label is used only after it is old enough to be known (30 days on IEEE-CIS, 1 day on AMLworld).</p>
+<div class="flow">
+<div><b>Evidence layer (87 features)</b>Entity memory (48), deviation from the user's own past (11), neighbours on the same card, address or device (15), evidence signals (13).</div>
+<div><b>TabM+G</b>Reads what the transaction looks like, plus the evidence layer. 16 ensemble members, learned feature gates, piecewise-linear encoding.</div>
+<div><b>Deviation model (+G)</b>Attends over the same user's last 16 transactions to ask how this one differs from their normal behaviour.</div>
+<div><b>Fixed weighted average</b>score = w₁s₁ + w₂s₂ + b, learned once on out-of-fold scores. Then Platt or familiarity-conditioned calibration.</div>
+</div>
+<p class="plain"><b>In plain terms:</b> for every transaction the layer writes down what a fraud analyst would already know at that moment. Two neural models read it from different angles and vote.</p>
+<h3>Training and evaluation protocol</h3>
+<p>Strict chronological split (70% train, 7.5% stop, 7.5% calibration, 15% test). Each component model is trained in 4 time-blocked folds, so the hybrid test score averages 8 networks. Results are test-set means over seeds 42, 7 and 123, with paired bootstrap intervals (200 resamples). A difference counts as better or worse only if its 95% interval excludes zero on every seed.</p>
+<h3>The two datasets</h3>
+<div class="tw"><table>
+<tr><th></th><th>IEEE-CIS</th><th>AMLworld HI-Small</th></tr>
+<tr><td>Domain</td><td>Card-not-present e-commerce fraud</td><td>Money laundering between bank accounts</td></tr>
+<tr><td>Source</td><td>Real (Vesta, Kaggle)</td><td>Synthetic simulator (Altman et al., 2023)</td></tr>
+<tr><td>Rows used</td><td>590,540</td><td>5,077,237</td></tr>
+<tr><td>Positive rate</td><td>3.5%</td><td>0.089%</td></tr>
+<tr><td>Raw columns</td><td>430+</td><td>10</td></tr>
+<tr><td>Customer identifier</td><td>Proxy: card1 + addr1 + first-use day</td><td>Real: sending bank + account</td></tr>
+<tr><td>Test rows with no history</td><td>33,166 (37%)</td><td>1,688 (0.2%)</td></tr>
+<tr><td>Label delay</td><td>30 days</td><td>1 day</td></tr>
+<tr><td>Test set</td><td>88,581 rows, 3.48% fraud</td><td>761,586 rows, 0.119% laundering</td></tr>
+</table></div>
+</section>
+
+<section id="results">
+<h2>Main results</h2>
+<p class="sub">PR-AUC on the held-out last 15% of the timeline. Bars show the three-seed mean, the black whisker shows ± one seed standard deviation.</p>
+<div class="tabs" role="group" aria-label="Dataset"><button data-ds="ieee" aria-pressed="true">IEEE-CIS</button><button data-ds="aml" aria-pressed="false">AMLworld</button></div>
+<div class="fig"><div id="bars"></div><div class="cap" id="barcap"></div></div>
+<div class="tw"><table id="mt"></table></div>
+<h3>Hybrid minus each baseline</h3>
+<div class="tw"><table id="dt"></table></div>
+</section>
+
+<section id="users">
+<h2>Results by how much history the user has</h2>
+<p class="sub">PR-AUC for new users (no earlier transactions), few-history users (1–5) and regular users (6+). Darker cells are higher within each dataset.</p>
+<div class="two"><div class="fig"><b class="sans">IEEE-CIS</b><div class="tw"><table class="hm" id="h1"></table></div></div>
+<div class="fig"><b class="sans">AMLworld</b><div class="tw"><table class="hm" id="h2"></table></div></div></div>
+<p class="plain"><b>Reading it:</b> on card fraud, trees are better where history is thin, and the hybrid is better for regular users on all three seeds (+0.023). On AMLworld the hybrid leads in every group, but only 1,688 test rows are new accounts, so that column has wide intervals.</p>
+</section>
+
+<section id="evidence">
+<h2>Why it works: the evidence layer</h2>
+<p class="sub">LightGBM PR-AUC as pieces of the layer are added. Retraining LightGBM on fresher labels never replaces it.</p>
+<div class="two">
+<div class="fig"><b class="sans">IEEE-CIS</b><div id="ev1"></div></div>
+<div class="fig"><b class="sans">AMLworld</b><div id="ev2"></div></div>
+</div>
+<p class="plain"><b>Different domains, different signal.</b> On IEEE-CIS almost the whole lift (+0.094) comes from entity memory with delayed fraud labels. The same layer without labels gives nothing. On AMLworld the label-free layer already lifts PR-AUC from 0.157 to 0.562, because account structure exposes laundering typologies.</p>
+</section>
+
+<section id="delay">
+<h2>How fast fraud is confirmed</h2>
+<p class="sub">LightGBM+ without neighbour features. Faster labels help a lot on card fraud and much less on laundering. The 0-day point is an upper bound.</p>
+<div class="two">
+<div class="fig"><b class="sans">IEEE-CIS, label delay in days (seed 42)</b><div id="l1"></div></div>
+<div class="fig"><b class="sans">AMLworld, label delay in days</b><div id="l2"></div></div>
+</div>
+<div class="cap sans" style="color:var(--mute);font-size:14px">IEEE-CIS: 0 to 30 days costs 0.18 PR-AUC, and the loss is concentrated in known users (regular users: 0.974 at 0 days, 0.770 at 30). AMLworld: 0 to 2–3 days costs only 0.02–0.03.</div>
+</section>
+
+<section id="design">
+<h2>Design choices that were tested</h2>
+<div class="tw"><table>
+<tr><th>Comparison (PR-AUC difference)</th><th>IEEE-CIS</th><th>AMLworld</th></tr>
+<tr><td>TabM vs TabNet, same inputs</td><td class="pos">+0.085, all seeds</td><td class="pos">+0.090, all seeds</td></tr>
+<tr><td>Graph features in both models vs none</td><td>−0.000, no stable effect</td><td class="pos">+0.010, all seeds</td></tr>
+<tr><td>Separate graph model added on top</td><td class="pos">+0.0035, all seeds</td><td class="neg">−0.0055, all seeds</td></tr>
+<tr><td>Evidence gate vs fixed average</td><td class="neg">−0.003, all seeds</td><td>−0.001, tie</td></tr>
+<tr><td>LightGBM retrained periodically vs once</td><td class="neg">−0.026, all seeds</td><td class="neg">−0.011, mixed</td></tr>
+<tr><td>Neighbour features added to LightGBM+</td><td>−0.007, unstable sign</td><td>+0.008, unstable sign</td></tr>
+<tr><td>Hybrid vs LightGBM+</td><td class="neg">−0.006 (worse, worse, tie)</td><td class="pos">+0.025, all seeds</td></tr>
+</table></div>
+<p class="plain"><b>Why trees still lead on card fraud:</b> sharp step-like rules, hundreds of weak columns, missing values that carry signal, and rare identifiers whose embeddings stay noisy. On AMLworld there are only 10 raw columns and long account histories, so those tree advantages matter less.</p>
+<h3>Calibration (ECE, lower is better, IEEE-CIS)</h3>
+<div class="tw"><table>
+<tr><th>Model</th><th>Raw</th><th>Platt</th><th>Familiarity-conditioned</th></tr>
+<tr class="me"><td>Hybrid</td><td>0.0041</td><td>0.0024</td><td>0.0019</td></tr>
+<tr><td>LightGBM+</td><td>0.0046</td><td>0.0034</td><td>0.0040</td></tr>
+</table></div>
+<h3>Indicative comparison with published AMLworld F1 (seed 123)</h3>
+<div class="fig"><div id="f1"></div><div class="cap">Not head-to-head: split, label use and features differ from the published setups. See the document for caveats.</div></div>
+</section>
+
+<section id="code">
+<h2>Code, document and reproduction</h2>
+<p>The AMLworld notebook is the IEEE-CIS code base with a dataset adapter. The past-only protocol, leak checks, evidence-layer functions, component models, 4-fold cross-fitting, fixed weighted average, LightGBM settings and seeds are identical. What changes:</p>
+<div class="tw"><table>
+<tr><th>Part</th><th>IEEE-CIS</th><th>AMLworld</th></tr>
+<tr><td>Customer identity</td><td>uid proxy from card1, addr1, first-use day</td><td>Sending bank + account; owner from accounts file</td></tr>
+<tr><td>Entity memory (8)</td><td>uid, card1, card bundle, addr1, emails, device, browser</td><td>Sender, receiver, pair, owners, banks, payment format + currencies</td></tr>
+<tr><td>Neighbour relations</td><td>Same card1, addr1, device</td><td>Same receiver, same receiving owner, other accounts of sender</td></tr>
+<tr><td>Deviation sequence columns</td><td>19</td><td>8</td></tr>
+<tr><td>Label delay</td><td>30 days (sweep 0 / 7 / 60)</td><td>1 day (sweep 0 / 2 / 3)</td></tr>
+<tr><td>Retrained baseline</td><td>Every 30 days from day 60</td><td>Every day from day 3</td></tr>
+<tr><td>Rows removed</td><td>None</td><td>11–18 Sept (1,108 rows, simulation artefact)</td></tr>
+<tr><td>TabM L0 pruning strength</td><td>0.5</td><td>0.02 (scaled by base-rate entropy)</td></tr>
+<tr><td>Hardware</td><td>LightGBM CPU, 32-bit neural</td><td>LightGBM GPU, mixed precision</td></tr>
+</table></div>
+<p style="margin-top:22px">
+<a class="btn" href="Fraud_Detection_Method_and_Results.pdf">Full document (PDF)</a>
+<a class="btn" href="hybrid_ieee_cis.ipynb">IEEE-CIS notebook</a>
+<a class="btn" href="hybrid_amlworld.ipynb">AMLworld notebook</a>
+<a class="btn" href="README.md">README</a></p>
+</section>
+</main>
+<footer><div class="w">All numbers are printed by the two notebooks or read from their stored per-seed result files. Bootstrap intervals cover test-set sampling; the three seeds cover training randomness.</div></footer>
+
+<script>
+const D={
+ieee:{base:.0348,rows:[["LightGBM, raw",.5459,.0026,.9041,.257],["LightGBM, raw, retrained every 30 days",.5203,.0071,.8949,.256],["LightGBM+ (raw + evidence)",.6354,.0089,.9344,.270],["LightGBM+ without neighbours",.6426,.0079,.9351,.272],["TabM+G alone",.6047,.0043,.9300,.263],["Deviation model (+G) alone",.5948,.0020,.9282,.266],["Hybrid (fixed weighted average)",.6296,.0013,.9364,.268]],
+cap:"<b>Reading it:</b> the hybrid beats both raw baselines on every seed (+0.084, +0.109) and is the most stable model. It is 0.006 below LightGBM+ (worse, worse, tie).",
+dl:[["LightGBM, raw","+0.0837","better ×3"],["LightGBM, raw, retrained","+0.1092","better ×3"],["LightGBM+","−0.0058","worse, worse, tie"],["LightGBM+ without neighbours","−0.0131","point differences"]]},
+aml:{rows:[["LightGBM, raw",.1571,.0097,.9673,.490],["LightGBM, raw, retrained daily",.1513,.0018,.9673,.481],["LightGBM+ (raw + evidence)",.6253,.0133,.9824,.814],["LightGBM+ without neighbours",.6169,.0084,.9808,.788],["TabM+G alone",.6375,.0020,.9895,.849],["Deviation model (+G) alone",.6327,.0018,.9891,.852],["Hybrid (fixed weighted average)",.6502,.0027,.9905,.855]],
+cap:"<b>Reading it:</b> the hybrid beats LightGBM+ on every seed (+0.025) and raw LightGBM by +0.49, with a spread of ±0.003 against ±0.013.",
+dl:[["LightGBM, raw","+0.4931","better ×3"],["LightGBM, raw, retrained daily","+0.4998","better ×2 (seeds 42, 123)"],["LightGBM+","+0.0249","better ×3"],["LightGBM+ without neighbours","+0.0333","point difference"]]}};
+const $=id=>document.getElementById(id);
+function bars(el,items,max,fmt=v=>v.toFixed(3)){
+ el.innerHTML=items.map(([l,v,e,cls])=>`<div class="bar"><div>${l}</div><div class="t"><i class="${cls||''}" data-w="${v/max*100}"></i>${e?`<em data-l="${(v-e)/max*100}" data-r="${2*e/max*100}"></em>`:''}</div><span>${fmt(v)}</span></div>`).join('');
+ requestAnimationFrame(()=>setTimeout(()=>{el.querySelectorAll('i').forEach(i=>i.style.width=i.dataset.w+'%');el.querySelectorAll('em').forEach(m=>{m.style.left=m.dataset.l+'%';m.style.width=m.dataset.r+'%'})},30));
+}
+function main(ds){
+ const d=D[ds],mx=Math.max(...d.rows.map(r=>r[1]))*1.08;
+ bars($('bars'),d.rows.map(r=>[r[0],r[1],r[2],r[0].startsWith('Hybrid')?'hi':r[0].includes('LightGBM')?'':'mid']),mx);
+ $('barcap').innerHTML=d.cap;
+ $('mt').innerHTML='<tr><th>Model</th><th>PR-AUC</th><th>± sd</th><th>ROC-AUC</th><th>Recall at 1% flagged</th></tr>'+d.rows.map(r=>`<tr class="${r[0].startsWith('Hybrid')?'me':''}"><td>${r[0]}</td><td>${r[1].toFixed(4)}</td><td>${r[2].toFixed(4)}</td><td>${r[3].toFixed(4)}</td><td>${r[4].toFixed(3)}</td></tr>`).join('');
+ $('dt').innerHTML='<tr><th>Hybrid minus</th><th>Δ PR-AUC</th><th>Per-seed verdict</th></tr>'+d.dl.map(r=>`<tr><td>${r[0]}</td><td class="${r[1][0]=='+'?'pos':'neg'}">${r[1]}</td><td>${r[2]}</td></tr>`).join('');
+}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-pressed',x==b));main(b.dataset.ds)});
+main('ieee');
+function heat(el,cols,rows){
+ const all=rows.flatMap(r=>r.slice(1)),mx=Math.max(...all),mn=Math.min(...all);
+ el.innerHTML='<tr><th></th>'+cols.map(c=>`<th>${c}</th>`).join('')+'</tr>'+rows.map(r=>`<tr><td>${r[0]}</td>`+r.slice(1).map(v=>{const a=.08+.82*(v-mn)/(mx-mn);return `<td style="background:color-mix(in srgb,var(--a) ${Math.round(a*100)}%,var(--panel));color:${a>.55?'#fff':'var(--ink)'}">${v.toFixed(3)}</td>`}).join('')+'</tr>').join('');
+}
+const C=["New (0)","Few (1–5)","Regular (6+)"];
+heat($('h1'),C,[["LightGBM raw",.700,.282,.317],["LightGBM raw, retrained",.688,.250,.235],["LightGBM+",.697,.392,.752],["LightGBM+ no neighbours",.694,.399,.773],["Hybrid",.682,.375,.775]]);
+heat($('h2'),C,[["LightGBM raw",.075,.161,.167],["LightGBM+",.116,.564,.681],["LightGBM+ no neighbours",.100,.561,.672],["Hybrid",.172,.593,.699]]);
+bars($('ev1'),[["Raw features",.5459,0,''],["+ deviation only",.5454,0,''],["+ layer, no labels",.5431,0,''],["+ entity memory only",.6403,0,'mid'],["+ layer, no neighbours",.6426,0,'mid'],["+ full layer (LightGBM+)",.6354,0,'hi']],.7);
+bars($('ev2'),[["Raw features",.1571,0,''],["+ deviation only",.5279,0,'mid'],["+ layer, no labels",.5618,0,'mid'],["+ entity memory only",.5443,0,'mid'],["+ layer, no neighbours",.6169,0,'mid'],["+ full layer (LightGBM+)",.6253,0,'hi']],.7);
+bars($('f1'),[["Gradient boosting, basic features (≤)",.245,0,''],["GIN, multigraph (Egressy 2024)",.572,0,''],["GFP + LightGBM (Altman 2023)",.629,0,''],["Multi-PNA (Egressy 2024)",.682,0,''],["Multi-FraudGT (Lin 2024)",.761,0,''],["This work: LightGBM raw",.230,0,'mid'],["This work: LightGBM+",.652,0,'mid'],["This work: hybrid",.675,0,'hi']],.8,v=>v.toFixed(3));
+function line(el,pts,y0,y1,col){
+ const W=420,H=230,p=38,x=i=>p+i*(W-p-16)/(pts.length-1),y=v=>H-28-(v-y0)/(y1-y0)*(H-48);
+ let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img">`;
+ for(let k=0;k<=4;k++){const v=y0+(y1-y0)*k/4;s+=`<line class="ax" x1="${p}" x2="${W-8}" y1="${y(v)}" y2="${y(v)}"/><text x="${p-6}" y="${y(v)+4}" text-anchor="end">${v.toFixed(2)}</text>`}
+ s+=`<polyline fill="none" stroke="${col}" stroke-width="2.5" points="${pts.map((q,i)=>x(i)+','+y(q[1])).join(' ')}"/>`;
+ pts.forEach((q,i)=>{s+=`<circle cx="${x(i)}" cy="${y(q[1])}" r="4.5" fill="${col}"/><text x="${x(i)}" y="${y(q[1])-10}" text-anchor="middle" style="fill:var(--ink)">${q[1].toFixed(3)}</text><text x="${x(i)}" y="${H-8}" text-anchor="middle">${q[0]}</text>`});
+ el.innerHTML=s+'</svg>';
+}
+line($('l1'),[["0",.8294],["7",.7073],["30",.6455],["60",.6098]],.55,.9,'var(--a)');
+line($('l2'),[["0",.6290],["1",.6169],["2",.5982],["3",.6050]],.55,.65,'var(--b)');
+$('th').onclick=()=>{const r=document.documentElement,d=(r.dataset.t||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'))=='dark';r.dataset.t=d?'light':'dark'};
+</script>
+</body>
+</html>
