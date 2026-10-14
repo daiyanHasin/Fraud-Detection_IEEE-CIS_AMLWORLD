@@ -173,8 +173,8 @@ footer{padding:34px 0 50px;color:var(--mute);font:14px/1.6 "Public Sans",sans-se
 <header class="bar"><div class="in">
   <a class="brand" href="#top">Past-only evidence for fraud detection</a>
   <div class="links">
-    <a class="btn sm" href="Fraud_Detection_Method_and_Results.pdf">Paper (PDF)</a>
-    <a class="btn sm" href="#code">Code</a>
+    <a class="btn sm" href="https://github.com/daiyanHasin/Fraud-Detection_IEEE-CIS_AMLWORLD/blob/main/Fraud_Detection_Method_and_Results.pdf" target="_blank" rel="noopener">Paper (PDF)</a>
+    <a class="btn sm" href="https://github.com/daiyanHasin/Fraud-Detection_IEEE-CIS_AMLWORLD" target="_blank" rel="noopener">Code (GitHub)</a>
     <button class="btn sm" id="theme" type="button" aria-label="Switch colour theme">Theme</button>
   </div>
 </div></header>
@@ -211,9 +211,9 @@ footer{padding:34px 0 50px;color:var(--mute);font:14px/1.6 "Public Sans",sans-se
   <p class="authors">Hasin Md. Daiyan</p>
   <p class="affil">Evaluated on IEEE-CIS card fraud (590,540 transactions) and IBM AMLworld HI-Small money laundering (5,077,237 transactions)</p>
   <div class="actions">
-    <a class="btn primary" href="Fraud_Detection_Method_and_Results.pdf">Read the full write-up (PDF)</a>
-    <a class="btn" href="hybrid_ieee_cis.ipynb">IEEE-CIS notebook</a>
-    <a class="btn" href="hybrid_amlworld.ipynb">AMLworld notebook</a>
+    <a class="btn primary" href="https://github.com/daiyanHasin/Fraud-Detection_IEEE-CIS_AMLWORLD/blob/main/Fraud_Detection_Method_and_Results.pdf" target="_blank" rel="noopener">Read the full write-up (PDF)</a>
+    <a class="btn" href="https://github.com/daiyanHasin/Fraud-Detection_IEEE-CIS_AMLWORLD/blob/main/hybrid_ieee_cis.ipynb" target="_blank" rel="noopener">IEEE-CIS notebook</a>
+    <a class="btn" href="https://github.com/daiyanHasin/Fraud-Detection_IEEE-CIS_AMLWORLD/blob/main/hybrid_amlworld.ipynb" target="_blank" rel="noopener">AMLworld notebook</a>
     <a class="btn" href="#cite">Cite</a>
   </div>
   <div class="abstract">
@@ -450,7 +450,7 @@ footer{padding:34px 0 50px;color:var(--mute);font:14px/1.6 "Public Sans",sans-se
 <!-- ================= 10 CODE ================= -->
 <section class="sec" id="code">
   <h2 class="s"><span class="n">10</span>Reproducibility</h2>
-  <p class="lede prose">Every number on this page is printed by one of two notebooks or read from their stored per-seed result files.</p>
+  <p class="lede prose">Every number on this page is printed by one of two notebooks or read from their stored per-seed result files. Code, notebooks and the full write-up are on GitHub: <a href="https://github.com/daiyanHasin/Fraud-Detection_IEEE-CIS_AMLWORLD" target="_blank" rel="noopener">github.com/daiyanHasin/Fraud-Detection_IEEE-CIS_AMLWORLD</a>.</p>
   <div id="tblFiles"></div>
   <div class="prose">
     <p><strong>Running.</strong> Download IEEE-CIS from the Kaggle competition (<span class="mono">train_transaction.csv</span>, <span class="mono">train_identity.csv</span>) and AMLworld HI-Small from the release accompanying Altman et al. (NeurIPS 2023). Set the data paths in the first cells and run each notebook once per seed, in the order 42, 7, 123. Every step caches its output and skips finished work. A GPU is strongly recommended; the AMLworld notebook uses LightGBM on GPU and mixed-precision neural training for its 5 million rows.</p>
@@ -465,12 +465,13 @@ footer{padding:34px 0 50px;color:var(--mute);font:14px/1.6 "Public Sans",sans-se
   year        = {2026},
   month       = oct,
   institution = {Research report},
+  url         = {https://github.com/daiyanHasin/Fraud-Detection_IEEE-CIS_AMLWORLD},
   note        = {Evaluated on IEEE-CIS and IBM AMLworld HI-Small}
 }</pre>
 </section>
 
 <footer>
-  <p>Hasin Md. Daiyan, 2026. Datasets: IEEE-CIS Fraud Detection (Vesta, Kaggle 2019); IBM AMLworld HI-Small (Altman et al., NeurIPS 2023). Literature values are taken from the cited papers; see the PDF for the full reference list.</p>
+  <p>Hasin Md. Daiyan, 2026. Code: <a href="https://github.com/daiyanHasin/Fraud-Detection_IEEE-CIS_AMLWORLD" target="_blank" rel="noopener">github.com/daiyanHasin/Fraud-Detection_IEEE-CIS_AMLWORLD</a>. Datasets: IEEE-CIS Fraud Detection (Vesta, Kaggle 2019); IBM AMLworld HI-Small (Altman et al., NeurIPS 2023). Literature values are taken from the cited papers; see the PDF for the full reference list.</p>
 </footer>
 </main>
 </div>
@@ -788,7 +789,7 @@ function mount(id,s,name,maxW){if(maxW)s.style.maxWidth=maxW+'px';
 function legend(id,items){const h=document.getElementById(id);if(!h)return;h.innerHTML=items.map(([n,c,kind])=>`<span><i class="${kind==='line'?'line':''}" style="background:${kind==='hollow'?'transparent':c};${kind==='hollow'?'border:2px solid '+c+';box-sizing:border-box':''}"></i>${n}</span>`).join('');}
 
 /* ---------- tables with LaTeX / CSV copy ---------- */
-function texEsc(s){return String(s).replace(/\\/g,'\\textbackslash{}').replace(/([&%#_$])/g,'\\$1').replace(/−/g,'$-$').replace(/±/g,'$\\pm$').replace(/Δ/g,'$\\Delta$').replace(/×/g,'$\\times$').replace(/†/g,'\\dag{}').replace(/→/g,'$\\rightarrow$').replace(/≥/g,'$\\geq$').replace(/–/g,'--').replace(/₁/g,'$_1$').replace(/₂/g,'$_2$').replace(/…/g,'\\ldots{}');}
+function texEsc(s){return String(s).replace(/<[^>]+>/g,'').replace(/\\/g,'\\textbackslash{}').replace(/([&%#_$])/g,'\\$1').replace(/−/g,'$-$').replace(/±/g,'$\\pm$').replace(/Δ/g,'$\\Delta$').replace(/×/g,'$\\times$').replace(/†/g,'\\dag{}').replace(/→/g,'$\\rightarrow$').replace(/≥/g,'$\\geq$').replace(/–/g,'--').replace(/₁/g,'$_1$').replace(/₂/g,'$_2$').replace(/…/g,'\\ldots{}');}
 function table(id,o){
   const host=document.getElementById(id);if(!host)return;
   const numCol=o.align||o.head.map((_,i)=>i===0?'l':'r');
@@ -803,7 +804,7 @@ function table(id,o){
     const body=o.rows.map((r,ri)=>r.map(c=>{const x=texEsc(c);return (o.hl||[]).includes(ri)?`\\textbf{${x}}`:x;}).join(' & ')+' \\\\').join('\n');
     const tex=`\\begin{table}[t]\n\\centering\n\\small\n\\caption{${texEsc(o.title.replace(/\.$/,''))}${o.caption?'. '+texEsc(o.caption):''}}\n\\label{tab:${o.label||id}}\n\\begin{tabular}{${spec}}\n\\toprule\n${o.head.map(texEsc).join(' & ')} \\\\\n\\midrule\n${body}\n\\bottomrule\n\\end{tabular}\n\\end{table}`;
     copy(tex,'LaTeX table copied (needs \\usepackage{booktabs})');});
-  wrap.querySelector('[data-a=csv]').addEventListener('click',()=>{const q=v=>/[",\n]/.test(v)?'"'+String(v).replace(/"/g,'""')+'"':v;copy([o.head,...o.rows].map(r=>r.map(q).join(',')).join('\n'),'CSV copied');});
+  wrap.querySelector('[data-a=csv]').addEventListener('click',()=>{const q=v=>(v=String(v).replace(/<[^>]+>/g,''),/[",\n]/.test(v))?'"'+String(v).replace(/"/g,'""')+'"':v;copy([o.head,...o.rows].map(r=>r.map(q).join(',')).join('\n'),'CSV copied');});
 }
 function vclass(c){c=String(c);if(/^(better(, )?)+$/.test(c)||/^better on all/.test(c)||c==='better'||c==='BETTER')return 'v-b';if(/^(worse(, )?)+$/.test(c)||/^worse on all/.test(c))return 'v-w';if(/^(mixed|tie)/.test(c))return 'v-t';return '';}
 
@@ -971,9 +972,9 @@ table('tblCmpAml',{title:'Table 8. AMLworld comparisons.',caption:'Same conventi
  ['Graph features in both models vs none','+0.0096','[+0.0053, +0.0142]','better on all seeds'],['Separate graph model on top of graph features','−0.0055','[−0.0084, −0.0024]','worse on all seeds'],
  ['Evidence gate vs fixed weighted average','−0.0005','[−0.0037, +0.0023]','tie on all seeds']]});
 table('tblLitAml',{title:'Table 9. AMLworld HI-Small minority-class F1, published and this work.',caption:'Indicative comparison: different splits and inputs (see Figure 15).',label:'lit-aml',head:['Method','F1','Source'],align:['l','r','l'],rows:LIT_AML.map(r=>[(s=>s[0].toUpperCase()+s.slice(1))(r[0].replace('This work, ','')),f3(r[1]),r[2]==='t'?'This work ('+r[3]+')':r[3]]),hl:[10]});
-table('tblFiles',{title:'Table 10. Repository contents.',label:'files',head:['File','Contents'],align:['l','l'],rows:[
- ['hybrid_ieee_cis.ipynb','Full pipeline on IEEE-CIS (card fraud, 30-day label delay)'],['hybrid_amlworld.ipynb','Same pipeline on IBM AMLworld HI-Small (1-day label delay)'],
- ['Fraud_Detection_Method_and_Results.pdf','Complete write-up: method, every table, ablations, literature comparison'],['index.html','This page (static, no build step)'],['README.md','Overview and instructions']]});
+table('tblFiles',{title:'Table 10. Repository contents.',caption:'All files are in the GitHub repository https://github.com/daiyanHasin/Fraud-Detection_IEEE-CIS_AMLWORLD.',label:'files',head:['File','Contents'],align:['l','l'],rows:[
+ ['<a href="https://github.com/daiyanHasin/Fraud-Detection_IEEE-CIS_AMLWORLD/blob/main/hybrid_ieee_cis.ipynb" target="_blank" rel="noopener">hybrid_ieee_cis.ipynb</a>','Full pipeline on IEEE-CIS (card fraud, 30-day label delay)'],['<a href="https://github.com/daiyanHasin/Fraud-Detection_IEEE-CIS_AMLWORLD/blob/main/hybrid_amlworld.ipynb" target="_blank" rel="noopener">hybrid_amlworld.ipynb</a>','Same pipeline on IBM AMLworld HI-Small (1-day label delay)'],
+ ['<a href="https://github.com/daiyanHasin/Fraud-Detection_IEEE-CIS_AMLWORLD/blob/main/Fraud_Detection_Method_and_Results.pdf" target="_blank" rel="noopener">Fraud_Detection_Method_and_Results.pdf</a>','Complete write-up: method, every table, ablations, literature comparison'],['<a href="https://github.com/daiyanHasin/Fraud-Detection_IEEE-CIS_AMLWORLD/blob/main/index.html" target="_blank" rel="noopener">index.html</a>','This page (static, no build step)'],['<a href="https://github.com/daiyanHasin/Fraud-Detection_IEEE-CIS_AMLWORLD/blob/main/README.md" target="_blank" rel="noopener">README.md</a>','Overview and instructions']]});
 
 /* ---------- TOC highlight ---------- */
 const links=[...document.querySelectorAll('.toc a')],targets=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
